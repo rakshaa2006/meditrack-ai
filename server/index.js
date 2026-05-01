@@ -13,5 +13,4 @@ app.use('/api/labs',        require('./routes/labs'));
 app.use('/api/ai',          require('./routes/ai'));
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
 });
