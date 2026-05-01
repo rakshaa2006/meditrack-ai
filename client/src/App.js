@@ -5,6 +5,8 @@ import Dashboard   from './pages/Dashboard';
 import Visits      from './pages/Visits';
 import Medications from './pages/Medications';
 import Labs        from './pages/Labs';
+import Symptoms from './pages/Symptoms';
+import Profile from './pages/Profile';
 
 export default function App() {
   const [page,   setPage]   = useState('login');
@@ -31,6 +33,8 @@ export default function App() {
     { id: 'visits',      label: 'Visits'       },
     { id: 'medications', label: 'Medications'  },
     { id: 'labs',        label: 'Lab Results'  },
+    { id: 'symptoms',    label: 'Symptoms'     },
+    { id: 'profile',     label: 'Profile'      },
   ];
 
   return (
@@ -68,6 +72,8 @@ export default function App() {
         {active === 'visits'      && <Visits      userId={user?.id} />}
         {active === 'medications' && <Medications userId={user?.id} />}
         {active === 'labs'        && <Labs        userId={user?.id} />}
+        {active === 'symptoms' && <Symptoms userId={user?.id} />}
+        {active === 'profile' && <Profile user={user} />}
       </div>
     </div>
   );
