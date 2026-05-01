@@ -1,8 +1,8 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 const pool = require('../config/db');
 require('dotenv').config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 async function summarizeHealthHistory(userId) {
   const visits = await pool.query(
@@ -19,24 +19,26 @@ async function summarizeHealthHistory(userId) {
   );
 
   const prompt = `
-    You are a helpful health assistant. Summarize the following patient 
+    You are a helpful health assistant. Summarize the following patient
     health records in plain English for the patient themselves.
-    
+
     Recent Visits: ${JSON.stringify(visits.rows)}
     Active Medications: ${JSON.stringify(meds.rows)}
     Recent Lab Results: ${JSON.stringify(labs.rows)}
-    
+
     Format your response in exactly 3 short sections:
     1. Overall Health Summary
     2. Anything Worth Discussing With Your Doctor
     3. Your Active Medications
-    
+
     Use plain language, no medical jargon.
   `;
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+  const response = await groq.chat.completions.create({
+    messages: [{ role: 'user', content: prompt }],
+    model: 'llama-3.3-70b-versatile',  });
+
+  return response.choices[0].message.content;
 }
 
 module.exports = { summarizeHealthHistory };
