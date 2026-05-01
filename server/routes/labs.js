@@ -4,12 +4,25 @@ const pool    = require('../config/db');
 
 // CREATE
 router.post('/', async (req, res) => {
-  const { user_id, visit_id, test_name, value, unit, reference_min, reference_max, test_date } = req.body;
+  const {
+    user_id, visit_id, test_name,
+    value, unit, reference_min, reference_max, test_date
+  } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO lab_results (user_id, visit_id, test_name, value, unit, reference_min, reference_max, test_date)
+      `INSERT INTO lab_results 
+        (user_id, visit_id, test_name, value, unit, reference_min, reference_max, test_date)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-      [user_id, visit_id, test_name, value, unit, reference_min, reference_max, test_date]
+      [
+        user_id,
+        visit_id    || null,
+        test_name,
+        value       || null,
+        unit,
+        reference_min || null,
+        reference_max || null,
+        test_date
+      ]
     );
     res.json(result.rows[0]);
   } catch (err) {

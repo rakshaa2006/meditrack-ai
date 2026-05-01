@@ -7,9 +7,17 @@ router.post('/', async (req, res) => {
   const { user_id, name, dosage, frequency, start_date, end_date } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO medications (user_id, name, dosage, frequency, start_date, end_date)
+      `INSERT INTO medications 
+        (user_id, name, dosage, frequency, start_date, end_date)
        VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [user_id, name, dosage, frequency, start_date, end_date]
+      [
+        user_id,
+        name,
+        dosage,
+        frequency,
+        start_date || null,
+        end_date   || null
+      ]
     );
     res.json(result.rows[0]);
   } catch (err) {
