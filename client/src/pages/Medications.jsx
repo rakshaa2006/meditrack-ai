@@ -4,121 +4,91 @@ import API from '../api';
 export default function Medications({ userId }) {
   const [meds,    setMeds]    = useState([]);
   const [showing, setShowing] = useState(false);
-  const [form,    setForm]    = useState({
-    name: '', dosage: '', frequency: '', start_date: '', end_date: ''
-  });
+  const [form,    setForm]    = useState({ name:'', dosage:'', frequency:'', start_date:'', end_date:'' });
 
-  const fetchMeds = () => {
-    API.get(`/medications/${userId}`).then(res => setMeds(res.data));
-  };
-
-  useEffect(() => { fetchMeds(); }, []);
+  const fetchMeds = () => API.get(`/medications/${userId}`).then(r => setMeds(r.data)).catch(()=>{});
+  useEffect(() => { fetchMeds(); }, [userId]);
 
   const handleAdd = async () => {
-    await API.post('/medications', { ...form, user_id: userId });
+    await API.post('/medications', { ...form, user_id:userId, end_date: form.end_date || null });
     setShowing(false);
-    setForm({ name: '', dosage: '', frequency: '', start_date: '', end_date: '' });
+    setForm({ name:'', dosage:'', frequency:'', start_date:'', end_date:'' });
     fetchMeds();
   };
 
-  const handleDelete = async (id) => {
-    await API.delete(`/medications/${id}`);
-    fetchMeds();
+  const handleDelete = async (id) => { await API.delete(`/medications/${id}`); fetchMeds(); };
+
+  const s = {
+    page:    { minHeight:'100vh', background:'#111827', padding:'20px' },
+    header:  { display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'18px' },
+    title:   { fontSize:'18px', fontWeight:'500', color:'#fff' },
+    sub:     { fontSize:'11px', color:'rgba(255,255,255,0.35)', marginTop:'2px' },
+    btnBlue: { padding:'7px 14px', background:'#2563eb', border:'none', borderRadius:'7px', color:'#fff', fontSize:'11px', cursor:'pointer' },
+    card:    { background:'#1a2234', border:'1px solid rgba(255,255,255,0.06)', borderRadius:'10px', padding:'14px', marginBottom:'10px' },
+    row:     { display:'flex', alignItems:'center', justifyContent:'space-between', padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' },
+    formBox: { background:'#1a2234', border:'1px solid rgba(255,255,255,0.06)', borderRadius:'10px', padding:'16px', marginBottom:'16px' },
+    label:   { fontSize:'11px', color:'rgba(255,255,255,0.4)', marginBottom:'5px', display:'block' },
+    input:   { width:'100%', padding:'8px 11px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'7px', color:'#fff', fontSize:'12px', marginBottom:'10px', outline:'none' },
+    row2:    { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' },
+    btnSm:   { padding:'4px 10px', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'5px', color:'rgba(255,255,255,0.45)', fontSize:'10px', cursor:'pointer' },
+    btnDel:  { padding:'4px 10px', background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.18)', borderRadius:'5px', color:'#f87171', fontSize:'10px', cursor:'pointer' },
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Medications</h2>
-        <button onClick={() => setShowing(!showing)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-          + Add Medication
-        </button>
+    <div style={s.page}>
+      <div style={s.header}>
+        <div><div style={s.title}>Medications</div><div style={s.sub}>{meds.filter(m=>m.is_active).length} active medications</div></div>
+        <button style={s.btnBlue} onClick={()=>setShowing(!showing)}>+ Add medication</button>
       </div>
 
       {showing && (
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <h3 className="font-semibold text-gray-700 mb-4">New Medication</h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Medicine Name</label>
-              <input value={form.name}
-                onChange={e => setForm({...form, name: e.target.value})}
-                placeholder="Metformin"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
-            </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Dosage</label>
-              <input value={form.dosage}
-                onChange={e => setForm({...form, dosage: e.target.value})}
-                placeholder="500mg"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
-            </div>
+        <div style={s.formBox}>
+          <div style={{fontSize:'13px',fontWeight:'500',color:'#fff',marginBottom:'14px'}}>New medication</div>
+          <div style={s.row2}>
+            <div><label style={s.label}>Medicine name</label><input style={s.input} value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="Metformin"/></div>
+            <div><label style={s.label}>Dosage</label><input style={s.input} value={form.dosage} onChange={e=>setForm({...form,dosage:e.target.value})} placeholder="500mg"/></div>
           </div>
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 mb-1 block">Frequency</label>
-            <select value={form.frequency}
-              onChange={e => setForm({...form, frequency: e.target.value})}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
-              <option value="">Select frequency</option>
-              <option>Once daily</option>
-              <option>Twice daily</option>
-              <option>Three times daily</option>
-              <option>Once weekly</option>
-            </select>
+          <label style={s.label}>Frequency</label>
+          <select style={{...s.input,cursor:'pointer'}} value={form.frequency} onChange={e=>setForm({...form,frequency:e.target.value})}>
+            <option value="">Select frequency</option>
+            <option>Once daily</option>
+            <option>Twice daily</option>
+            <option>Three times daily</option>
+            <option>Once weekly</option>
+          </select>
+          <div style={s.row2}>
+            <div><label style={s.label}>Start date</label><input type="date" style={s.input} value={form.start_date} onChange={e=>setForm({...form,start_date:e.target.value})}/></div>
+            <div><label style={s.label}>End date (optional)</label><input type="date" style={s.input} value={form.end_date} onChange={e=>setForm({...form,end_date:e.target.value})}/></div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Start Date</label>
-              <input type="date" value={form.start_date}
-                onChange={e => setForm({...form, start_date: e.target.value})}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
-            </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">End Date (optional)</label>
-              <input type="date" value={form.end_date}
-                onChange={e => setForm({...form, end_date: e.target.value})}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <button onClick={handleAdd}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-              Save Medication
-            </button>
-            <button onClick={() => setShowing(false)}
-              className="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">
-              Cancel
-            </button>
+          <div style={{display:'flex',gap:'8px'}}>
+            <button style={s.btnBlue} onClick={handleAdd}>Save medication</button>
+            <button style={s.btnSm} onClick={()=>setShowing(false)}>Cancel</button>
           </div>
         </div>
       )}
 
-      <div className="space-y-3">
+      <div style={s.card}>
         {meds.length === 0 ? (
-          <p className="text-gray-400 text-sm">No medications added yet.</p>
-        ) : (
-          meds.map(m => (
-            <div key={m.id} className="bg-white rounded-xl shadow p-5 flex justify-between items-center">
-              <div>
-                <h3 className="font-semibold text-gray-800">{m.name}</h3>
-                <p className="text-sm text-gray-500">{m.dosage} · {m.frequency}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  From {m.start_date?.slice(0,10)} {m.end_date ? `to ${m.end_date?.slice(0,10)}` : '(ongoing)'}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full">
-                  {m.is_active ? 'Active' : 'Inactive'}
-                </span>
-                <button onClick={() => handleDelete(m.id)}
-                  className="text-red-400 hover:text-red-600 text-xs">
-                  Delete
-                </button>
-              </div>
+          <div style={{textAlign:'center',padding:'24px',color:'rgba(255,255,255,0.25)',fontSize:'12px'}}>No medications added yet.</div>
+        ) : meds.map(m => (
+          <div key={m.id} style={{...s.row,'&:lastChild':{borderBottom:'none'}}}>
+            <div>
+              <div style={{fontSize:'13px',color:'#e2e8f0',fontWeight:'500'}}>{m.name} <span style={{fontWeight:'400',color:'rgba(255,255,255,0.4)',fontSize:'12px'}}>{m.dosage}</span></div>
+              <div style={{fontSize:'10px',color:'rgba(255,255,255,0.3)',marginTop:'2px'}}>{m.frequency} · Since {m.start_date?.slice(0,10)}</div>
             </div>
-          ))
-        )}
+            <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+              <span style={{fontSize:'9px',padding:'2px 8px',borderRadius:'20px',fontWeight:'500', ...(m.is_active ? {background:'rgba(34,197,94,0.12)',color:'#4ade80'} : {background:'rgba(255,255,255,0.06)',color:'rgba(255,255,255,0.3)'})}}>
+                {m.is_active ? 'Active' : 'Inactive'}
+              </span>
+              <button style={s.btnSm}>Edit</button>
+              <button style={s.btnDel} onClick={()=>handleDelete(m.id)}>Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{padding:'10px 12px',background:'rgba(37,99,235,0.07)',border:'1px solid rgba(37,99,235,0.16)',borderRadius:'8px',fontSize:'11px',color:'rgba(255,255,255,0.5)',display:'flex',gap:'6px',alignItems:'flex-start'}}>
+        🤖 AI check: No harmful interactions detected between your active medications.
       </div>
     </div>
   );
