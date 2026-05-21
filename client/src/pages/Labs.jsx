@@ -5,6 +5,56 @@ import {
 } from 'recharts';
 import API from '../api';
 
+const darkCard = {background:'#1a2234',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'14px',marginBottom:'10px'};
+const darkInput = {width:'100%',padding:'8px 11px',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'7px',color:'#fff',fontSize:'12px',marginBottom:'10px',outline:'none'};
+const darkLabel = {fontSize:'11px',color:'rgba(255,255,255,0.4)',marginBottom:'5px',display:'block'};
+const btnBlue = {padding:'7px 14px',background:'#2563eb',border:'none',borderRadius:'7px',color:'#fff',fontSize:'11px',cursor:'pointer'};
+const pageStyle = {minHeight:'100vh', background:'#111827', padding:'20px'};
+const headerStyle = {display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'24px'};
+const headerTitle = {fontSize:'1.25rem', fontWeight:700, color:'#f8fafc'};
+const addButton = {...btnBlue, fontSize:'0.875rem'};
+const formCard = {...darkCard, borderRadius:'16px', padding:'24px', boxShadow:'0 10px 30px rgba(0,0,0,0.15)'};
+const formTitle = {fontWeight:600, color:'#e5e7eb', marginBottom:'16px'};
+const formGrid2 = {display:'grid', gridTemplateColumns:'repeat(2, minmax(0, 1fr))', gap:'16px', marginBottom:'16px'};
+const formGrid3 = {display:'grid', gridTemplateColumns:'repeat(3, minmax(0, 1fr))', gap:'16px', marginBottom:'16px'};
+const formField = {marginBottom:'16px'};
+const buttonRow = {display:'flex', gap:'12px'};
+const cancelButton = {padding:'10px 16px', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'12px', color:'rgba(255,255,255,0.75)', background:'transparent', cursor:'pointer', fontSize:'0.875rem'};
+const emptyState = {textAlign:'center', padding:'32px 0', color:'rgba(255,255,255,0.6)'};
+const emptyEmoji = {fontSize:'2rem', marginBottom:'8px'};
+const emptyText = {fontSize:'0.875rem'};
+const emptySmall = {fontSize:'0.75rem', marginTop:'4px'};
+const labCard = {...darkCard, display:'flex', justifyContent:'space-between', alignItems:'center'};
+const labCardTitle = {fontWeight:600, color:'#f8fafc'};
+const labValue = {fontSize:'1.125rem', fontWeight:700, color:'#f8fafc', marginTop:'4px'};
+const labUnit = {fontSize:'0.875rem', fontWeight:400, color:'rgba(255,255,255,0.7)', marginLeft:'6px'};
+const labMeta = {fontSize:'0.75rem', color:'rgba(255,255,255,0.6)', marginTop:'4px'};
+const labActionRow = {display:'flex', alignItems:'center', gap:'12px'};
+const deleteButton = {background:'transparent', border:'none', color:'#fb7185', cursor:'pointer', fontSize:'0.75rem'};
+const chartCard = {...darkCard, borderRadius:'16px', padding:'24px'};
+const chartHeaderRow = {display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px'};
+const chartTitle = {fontWeight:600, color:'#e5e7eb'};
+const selectStyle = {width:'100%', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'12px', padding:'10px 12px', fontSize:'0.875rem', background:'#111827', color:'#fff', outline:'none'};
+const chartNote = {textAlign:'center', padding:'32px 0', color:'rgba(255,255,255,0.6)', fontSize:'0.875rem'};
+const legendRow = {display:'flex', gap:'16px', marginBottom:'16px', fontSize:'0.75rem', color:'rgba(255,255,255,0.7)'};
+const legendBlock = {display:'flex', alignItems:'center', gap:'8px'};
+const legendDot = {width:'12px', height:'12px', borderRadius:'9999px', background:'#3b82f6', display:'inline-block'};
+const legendLineGreen = {width:'24px', borderTop:'2px dashed #22c55e', display:'inline-block'};
+const legendLineOrange = {width:'24px', borderTop:'2px dashed #f97316', display:'inline-block'};
+const trendMessage = {marginTop:'16px', padding:'12px', borderRadius:'12px', background:'#0f172a', fontSize:'0.875rem'};
+const trendTextGreen = {color:'#4ade80'};
+const trendTextRed = {color:'#f87171'};
+const trendTextYellow = {color:'#fbbf24'};
+const tooltipStyle = {background:'#ffffff', border:'1px solid #e5e7eb', borderRadius:'16px', padding:'12px', boxShadow:'0 10px 15px rgba(0,0,0,0.08)', fontSize:'0.875rem'};
+const tooltipLabelStyle = {color:'#6b7280', marginBottom:'4px'};
+const tooltipValueStyle = {fontWeight:700, color:'#111827'};
+const statusPillBase = {fontSize:'0.75rem', padding:'4px 10px', borderRadius:'9999px', fontWeight:600, display:'inline-block'};
+const statusStyle = {
+  normal: {background:'#ecfdf5', color:'#166534'},
+  high: {background:'#fee2e2', color:'#b91c1c'},
+  low: {background:'#fef3c7', color:'#92400e'},
+};
+
 export default function Labs({ userId }) {
   const [labs,         setLabs]         = useState([]);
   const [showing,      setShowing]      = useState(false);
@@ -18,6 +68,7 @@ export default function Labs({ userId }) {
     API.get(`/labs/${userId}`).then(res => setLabs(res.data)).catch(() => {});
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchLabs(); }, []);
 
   const testNames = [...new Set(labs.map(l => l.test_name))];
@@ -54,12 +105,6 @@ export default function Labs({ userId }) {
     return 'normal';
   };
 
-  const statusStyle = {
-    normal: 'bg-green-50 text-green-700',
-    high:   'bg-red-50 text-red-600',
-    low:    'bg-yellow-50 text-yellow-600',
-  };
-
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const val    = payload[0].value;
@@ -67,10 +112,10 @@ export default function Labs({ userId }) {
       const max    = chartData[0]?.normalMax;
       const status = getStatus(val, min, max);
       return (
-        <div className="bg-white border border-gray-200 rounded-lg p-3 shadow text-sm">
-          <p className="text-gray-500 mb-1">{label}</p>
-          <p className="font-bold text-gray-800">{val}</p>
-          <span className={`text-xs px-2 py-0.5 rounded-full ${statusStyle[status]}`}>
+        <div style={tooltipStyle}>
+          <p style={tooltipLabelStyle}>{label}</p>
+          <p style={tooltipValueStyle}>{val}</p>
+          <span style={{...statusPillBase, ...statusStyle[status]}}>
             {status.toUpperCase()}
           </span>
         </div>
@@ -80,86 +125,86 @@ export default function Labs({ userId }) {
   };
 
   return (
-    <div>
+    <div style={pageStyle}>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-800">Lab Results</h2>
+      <div style={headerStyle}>
+        <h2 style={headerTitle}>Lab Results</h2>
         <button
           onClick={() => setShowing(!showing)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
+          style={addButton}>
           + Add Result
         </button>
       </div>
 
       {/* Add form */}
       {showing && (
-        <div className="bg-white rounded-xl shadow p-6 mb-6">
-          <h3 className="font-semibold text-gray-700 mb-4">New Lab Result</h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Test Name</label>
+        <div style={formCard}>
+          <h3 style={formTitle}>New Lab Result</h3>
+          <div style={formGrid2}>
+            <div style={formField}>
+              <label style={darkLabel}>Test Name</label>
               <input
                 value={form.test_name}
                 onChange={e => setForm({...form, test_name: e.target.value})}
                 placeholder="Fasting Glucose"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+                style={darkInput}/>
             </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Value</label>
+            <div style={formField}>
+              <label style={darkLabel}>Value</label>
               <input
                 type="number"
                 value={form.value}
                 onChange={e => setForm({...form, value: e.target.value})}
                 placeholder="118"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+                style={darkInput}/>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Unit</label>
+          <div style={formGrid3}>
+            <div style={formField}>
+              <label style={darkLabel}>Unit</label>
               <input
                 value={form.unit}
                 onChange={e => setForm({...form, unit: e.target.value})}
                 placeholder="mg/dL"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+                style={darkInput}/>
             </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Normal Min</label>
+            <div style={formField}>
+              <label style={darkLabel}>Normal Min</label>
               <input
                 type="number"
                 value={form.reference_min}
                 onChange={e => setForm({...form, reference_min: e.target.value})}
                 placeholder="70"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+                style={darkInput}/>
             </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Normal Max</label>
+            <div style={formField}>
+              <label style={darkLabel}>Normal Max</label>
               <input
                 type="number"
                 value={form.reference_max}
                 onChange={e => setForm({...form, reference_max: e.target.value})}
                 placeholder="100"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+                style={darkInput}/>
             </div>
           </div>
-          <div className="mb-4">
-            <label className="text-sm text-gray-600 mb-1 block">Test Date</label>
+          <div style={formField}>
+            <label style={darkLabel}>Test Date</label>
             <input
               type="date"
               value={form.test_date}
               onChange={e => setForm({...form, test_date: e.target.value})}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"/>
+              style={darkInput}/>
           </div>
-          <div className="flex gap-3">
+          <div style={buttonRow}>
             <button
               onClick={handleAdd}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
+              style={addButton}>
               Save Result
             </button>
             <button
               onClick={() => setShowing(false)}
-              className="border border-gray-200 px-4 py-2 rounded-lg text-sm text-gray-600">
+              style={cancelButton}>
               Cancel
             </button>
           </div>
@@ -167,38 +212,36 @@ export default function Labs({ userId }) {
       )}
 
       {/* Lab results list */}
-      <div className="space-y-3 mb-6">
+      <div style={{marginBottom:'24px'}}>
         {labs.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
-            <p className="text-3xl mb-2">🧪</p>
-            <p className="text-sm">No lab results added yet</p>
-            <p className="text-xs mt-1">Click Add Result to record your first test</p>
+          <div style={emptyState}>
+            <p style={emptyEmoji}>🧪</p>
+            <p style={emptyText}>No lab results added yet</p>
+            <p style={emptySmall}>Click Add Result to record your first test</p>
           </div>
         ) : (
           labs.map(l => {
             const status = getStatus(l.value, l.reference_min, l.reference_max);
             return (
-              <div key={l.id}
-                className="bg-white rounded-xl shadow p-5 flex justify-between items-center">
+              <div key={l.id} style={labCard}>
                 <div>
-                  <h3 className="font-semibold text-gray-800">{l.test_name}</h3>
-                  <p className="text-lg font-bold text-gray-800 mt-1">
+                  <h3 style={labCardTitle}>{l.test_name}</h3>
+                  <p style={labValue}>
                     {l.value}
-                    <span className="text-sm font-normal text-gray-400 ml-1">{l.unit}</span>
+                    <span style={labUnit}>{l.unit}</span>
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p style={labMeta}>
                     Normal: {l.reference_min}–{l.reference_max} {l.unit}
                     · {l.test_date?.slice(0,10)}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs px-3 py-1 rounded-full font-medium
-                    ${statusStyle[status]}`}>
+                <div style={labActionRow}>
+                  <span style={{...statusPillBase, ...statusStyle[status]}}>
                     {status.toUpperCase()}
                   </span>
                   <button
                     onClick={() => handleDelete(l.id)}
-                    className="text-red-400 hover:text-red-600 text-xs">
+                    style={deleteButton}>
                     Delete
                   </button>
                 </div>
@@ -210,14 +253,13 @@ export default function Labs({ userId }) {
 
       {/* Chart section */}
       {labs.length > 0 && (
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-700">Trend Chart</h3>
+        <div style={chartCard}>
+          <div style={chartHeaderRow}>
+            <h3 style={chartTitle}>Trend Chart</h3>
             <select
               value={selectedTest}
               onChange={e => setSelectedTest(e.target.value)}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm
-                focus:outline-none focus:border-blue-400">
+              style={selectStyle}>
               <option value="">Select a test to view trend</option>
               {testNames.map(name => (
                 <option key={name} value={name}>{name}</option>
@@ -226,31 +268,31 @@ export default function Labs({ userId }) {
           </div>
 
           {!selectedTest && (
-            <div className="text-center py-8 text-gray-400">
-              <p className="text-3xl mb-2">📊</p>
-              <p className="text-sm">Select a test from the dropdown to see its trend</p>
+            <div style={chartNote}>
+              <p style={emptyEmoji}>📊</p>
+              <p style={emptyText}>Select a test from the dropdown to see its trend</p>
             </div>
           )}
 
           {selectedTest && chartData.length === 1 && (
-            <div className="text-center py-6 text-gray-400 text-sm">
+            <div style={chartNote}>
               Add at least 2 results for {selectedTest} to see the trend chart
             </div>
           )}
 
           {selectedTest && chartData.length > 1 && (
             <>
-              <div className="flex gap-4 mb-4 text-xs text-gray-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+              <div style={legendRow}>
+                <span style={legendBlock}>
+                  <span style={legendDot}></span>
                   Your values
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-6 border-t-2 border-dashed border-green-500 inline-block"></span>
+                <span style={legendBlock}>
+                  <span style={legendLineGreen}></span>
                   Normal max ({chartData[0]?.normalMax})
                 </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-6 border-t-2 border-dashed border-orange-400 inline-block"></span>
+                <span style={legendBlock}>
+                  <span style={legendLineOrange}></span>
                   Normal min ({chartData[0]?.normalMin})
                 </span>
               </div>
@@ -259,13 +301,14 @@ export default function Labs({ userId }) {
                 <LineChart
                   data={chartData}
                   margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0"/>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155"/>
                   <XAxis
                     dataKey="date"
-                    tick={{ fontSize: 11, fill: '#6b7280' }}
-                    tickLine={false}/>
+                    tick={{ fontSize: 11, fill: '#cbd5e1' }}
+                    tickLine={false}
+                    axisLine={false}/>
                   <YAxis
-                    tick={{ fontSize: 11, fill: '#6b7280' }}
+                    tick={{ fontSize: 11, fill: '#cbd5e1' }}
                     tickLine={false}
                     axisLine={false}/>
                   <Tooltip content={<CustomTooltip />}/>
@@ -284,7 +327,7 @@ export default function Labs({ userId }) {
                     dataKey="value"
                     stroke="#3b82f6"
                     strokeWidth={2.5}
-                    dot={{ fill: '#3b82f6', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                    dot={{ fill: '#3b82f6', r: 5, strokeWidth: 2, stroke: '#111827' }}
                     activeDot={{ r: 7 }}/>
                 </LineChart>
               </ResponsiveContainer>
@@ -296,13 +339,13 @@ export default function Labs({ userId }) {
                 const going = last > first ? '📈 Rising'
                             : last < first ? '📉 Falling'
                             : '➡️ Stable';
-                const color = last > chartData[0]?.normalMax
-                            ? 'text-red-500'
+                const colorStyle = last > chartData[0]?.normalMax
+                            ? trendTextRed
                             : last < chartData[0]?.normalMin
-                            ? 'text-yellow-500'
-                            : 'text-green-600';
+                            ? trendTextYellow
+                            : trendTextGreen;
                 return (
-                  <div className={`mt-4 p-3 rounded-lg bg-gray-50 text-sm ${color}`}>
+                  <div style={{...trendMessage, ...colorStyle}}>
                     {going} — changed by {diff > 0 ? '+' : ''}{diff} since first recorded.
                     {last > chartData[0]?.normalMax && ' Currently above normal range.'}
                     {last < chartData[0]?.normalMin && ' Currently below normal range.'}
