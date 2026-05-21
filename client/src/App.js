@@ -1,21 +1,24 @@
-import { useState } from 'react';
-import Login       from './pages/Login';
-import Register    from './pages/Register';
-import Dashboard   from './pages/Dashboard';
-import Visits      from './pages/Visits';
+﻿import { useState } from 'react';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import Visits from './pages/Visits';
 import Medications from './pages/Medications';
-import Labs        from './pages/Labs';
+import Labs from './pages/Labs';
 import Symptoms from './pages/Symptoms';
 import Profile from './pages/Profile';
 import Timeline from './pages/Timeline';
 
 export default function App() {
-  const [page,   setPage]   = useState('login');
-  const [user,   setUser]   = useState(null);
+  const [page, setPage] = useState('login');
+  const [user, setUser] = useState(null);
   const [active, setActive] = useState('dashboard');
 
   const handleLogin = (u) => {
-    if (u === 'register') { setPage('register'); return; }
+    if (u === 'register') {
+      setPage('register');
+      return;
+    }
     setUser(u);
     setPage('app');
   };
@@ -26,54 +29,119 @@ export default function App() {
     localStorage.clear();
   };
 
-  if (page === 'login')    return <Login    onLogin={handleLogin} />;
+  if (page === 'login') return <Login onLogin={handleLogin} />;
   if (page === 'register') return <Register onRegister={() => setPage('login')} />;
 
   const navItems = [
-    { id: 'dashboard',   label: 'Dashboard'   },
-    { id: 'visits',      label: 'Visits'       },
-    { id: 'medications', label: 'Medications'  },
-    { id: 'labs',        label: 'Lab Results'  },
-    { id: 'symptoms',    label: 'Symptoms'     },
-    { id: 'profile',     label: 'Profile'      },
-    { id: 'timeline',    label: 'Timeline'     },
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'visits', label: 'Visits' },
+    { id: 'medications', label: 'Medications' },
+    { id: 'labs', label: 'Lab Results' },
+    { id: 'symptoms', label: 'Symptoms' },
+    { id: 'profile', label: 'Profile' },
+    { id: 'timeline', label: 'Timeline' },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <div className="w-56 bg-white border-r border-gray-100 flex flex-col">
-        <div className="p-5 border-b border-gray-100">
-          <h1 className="text-blue-700 font-bold text-lg">MediTrack AI</h1>
-          <p className="text-gray-400 text-xs mt-1">Hello, {user?.name} 👋</p>
+    <div style={{minHeight:'100vh', background:'#111827', display:'flex'}}>
+      <div style={{width:'180px', minWidth:'180px', background:'#1a2234', borderRight:'1px solid rgba(255,255,255,0.06)', display:'flex', flexDirection:'column'}}>
+      
+        <div
+          style={{
+            padding: '16px',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <div style={{padding:'16px', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', alignItems:'center', gap:'8px'}}>
+            🏥
+          </div>
+          <div style={{fontSize:'14px', fontWeight:'500', color:'#fff'}}>
+            Medi<span style={{color:'#2563eb'}}>Track</span> AI
+          </div>
         </div>
-        <nav className="flex-1 p-3">
-          {navItems.map(item => (
+
+        <nav style={{ flex: 1, padding: '8px' }}>
+          {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActive(item.id)}
-              className={`w-full text-left px-4 py-2.5 rounded-lg text-sm mb-1 transition-all
-                ${active === item.id
-                  ? 'bg-blue-50 text-blue-700 font-medium'
-                  : 'text-gray-600 hover:bg-gray-50'}`}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '8px 10px',
+                borderRadius: '8px',
+                fontSize: '12px',
+                border: 'none',
+                cursor: 'pointer',
+                marginBottom: '2px',
+                background: active === item.id ? 'rgba(37,99,235,0.18)' : 'transparent',
+                color: active === item.id ? '#60a5fa' : 'rgba(255,255,255,0.45)',
+              }}
             >
               {item.label}
             </button>
           ))}
         </nav>
-        <div className="p-3 border-t border-gray-100">
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2.5 rounded-lg text-sm text-red-500 hover:bg-red-50">
-            Sign Out
-          </button>
+
+        <div
+          style={{
+            padding: '12px 16px',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <div
+            style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              background: '#00b4a0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '11px',
+              fontWeight: '500',
+              color: '#0f1117',
+            }}
+          >
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '500', color: 'rgba(255,255,255,0.8)' }}>
+              {user?.name}
+            </div>
+            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>Patient</div>
+          </div>
         </div>
+
+        <div style={{padding:'10px', borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+  <div style={{display:'flex', alignItems:'center', gap:'8px', padding:'6px 8px', marginBottom:'4px'}}>
+    <div style={{width:'26px', height:'26px', borderRadius:'50%', background:'#2563eb', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'11px', fontWeight:'500', color:'#fff', flexShrink:0}}>
+      {user?.name?.charAt(0).toUpperCase()}
+    </div>
+    <div>
+      <div style={{fontSize:'11px', color:'rgba(255,255,255,0.75)', fontWeight:'500'}}>{user?.name}</div>
+      <div style={{fontSize:'10px', color:'rgba(255,255,255,0.3)'}}>Patient</div>
+    </div>
+  </div>
+  <button
+    onClick={handleLogout}
+    style={{width:'100%', textAlign:'left', padding:'7px 10px', borderRadius:'7px', fontSize:'11px', border:'none', cursor:'pointer', background:'transparent', color:'rgba(239,68,68,0.7)'}}>
+    Sign out
+  </button>
+</div>
       </div>
 
-      <div className="flex-1 p-8 overflow-auto">
-        {active === 'dashboard'   && <Dashboard   userId={user?.id} />}
-        {active === 'visits'      && <Visits      userId={user?.id} />}
+      <div style={{flex:1, overflowY:'auto'}}>
+        {active === 'dashboard' && <Dashboard userId={user?.id} />}
+        {active === 'visits' && <Visits userId={user?.id} />}
         {active === 'medications' && <Medications userId={user?.id} />}
-        {active === 'labs'        && <Labs        userId={user?.id} />}
+        {active === 'labs' && <Labs userId={user?.id} />}
         {active === 'symptoms' && <Symptoms userId={user?.id} />}
         {active === 'profile' && <Profile user={user} />}
         {active === 'timeline' && <Timeline />}
