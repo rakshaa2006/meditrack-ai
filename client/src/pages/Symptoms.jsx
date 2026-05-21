@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import API from '../api';
 
 export default function Symptoms({ userId }) {
   const [symptoms, setSymptoms] = useState([]);
   const [form, setForm] = useState({ symptom: '', severity: 5 });
 
-  const fetchSymptoms = () => {
+  const fetchSymptoms = useCallback(() => {
     API.get(`/symptoms/${userId}`).then(r => setSymptoms(r.data)).catch(() => {});
-  };
+  }, [userId]);
 
-  useEffect(() => { fetchSymptoms(); }, []);
+  useEffect(() => { fetchSymptoms(); }, [fetchSymptoms]);
 
   const handleAdd = async () => {
     if (!form.symptom) return;
